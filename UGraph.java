@@ -1,79 +1,57 @@
-import java.util.Scanner;
 
 public class UGraph{
-	
-	Graph[] graph;
-	private int vertices;
 
-	public UGraph(){
-		int input = 0;
-		Scanner scan = new Scanner(System.in);
-		System.out.print("Insert number of Vertices: ");
-		vertices = scan.nextInt();
+	protected int vertices;
+	protected int edges;
+	protected Vertex[] graph;
 
-		graph = new Graph[vertices];
-		for(int i = 0; i<graph.length; i++){
-			graph[i] = new Graph();
-		}
+	public UGraph(int vertices){
+		graph = new Vertex[vertices];
+		this.vertices = vertices;
 
-		for(int i = 0; i<graph.length; i++){ //add edges
-			while(input!=-1){
-				System.out.println("Enter valid edges for vertex "+i+"(-1 to complete):");
-				input = scan.nextInt();
-				if(input==-1)
-					break;
-				if(input>=0 && input<vertices){
-					graph[i].addneighbour(input);
-
-					graph[input].addneighbour(i);
-				}
-			}
-			input = 0;
-		}
-
-		input = 0;
-		do{
-			System.out.print("CHoose\n\t1.Number of vertices\n\t2.Print graph\nChoice:");
-			input = scan.nextInt();
-
-			switch(input){
-				case 1: System.out.println("Number of vertices: "+vertices);break;
-				case 2: printGraph();break;
-			}
-
-			input = 0;
-
-		}while(input!=-1);
-
+		for(int i = 0; i<vertices; i++)
+			graph[i] = new Vertex();
 	}
 
-	private void printGraph(){
-		for(int i = 0; i<graph.length; i++){
-			System.out.print("Vertex "+i+" has neighbours ");
-			Node auxNode = graph[i].neighbourNode;
-			while(auxNode!=null){
-				System.out.print(auxNode.getNeighbourIndex()+" ");
-				auxNode = auxNode.getNode();
-			}
-			System.out.println("");
-		}
+	protected void addEdge(int v1, int v2){ //v1 = i, v2 = input
+		graph[v1].addNeighbour(v2);
+		graph[v2].addNeighbour(v1);
 	}
 
+	protected void printGraph(int vertexIndex){
+		System.out.print("Vertex "+vertexIndex+" has neighbours ");
+		Node auxNode = graph[vertexIndex].neighbourNode;
 
+		while(auxNode!=null){
+			System.out.print(auxNode.getNeighbourIndex()+" ");
+			auxNode = auxNode.getNode();
+		}
+		System.out.println("");
+	}
 
-	class Graph{
-		Node neighbourNode;
+	protected boolean isAdjacent(int v1, int v2){
+		boolean adjacent = false;
+		Node auxNode = graph[v1].neighbourNode;
+		while(auxNode!=null){
+			if(auxNode.getNeighbourIndex()==v2){
+				adjacent = true;
+				break;
+			}
+			auxNode = auxNode.getNode();
+		}
+		return adjacent;
+	}
+
+	private class Vertex{
+		Node neighbourNode = null;
 		String name;
 
-		public Graph(){
-			neighbourNode = null;
-		}
+		public Vertex(){}
 
-		public void addneighbour(int neighbour){
+		public void addNeighbour(int neighbourIndex){
 			//check if neighbor is valid and already exists
 			if(neighbourNode==null){
-				Node newNode = new Node(neighbour, null);
-				neighbourNode = newNode;
+				neighbourNode = new Node(neighbourIndex, null);
 				return;
 			}
 
@@ -81,49 +59,45 @@ public class UGraph{
 			Node auxNode = neighbourNode;
 
 			while(auxNode!=null){
-
-				if(auxNode.getNeighbourIndex()==neighbour){
+				if(auxNode.getNeighbourIndex()==neighbourIndex){
 					nodeExist = true;
 					break;
 				}
-
 				auxNode = auxNode.getNode();
 			}
 
 			if(nodeExist==false){
-				Node newNode = new Node(neighbour, neighbourNode);
+				Node newNode = new Node(neighbourIndex, neighbourNode);
 				neighbourNode = newNode;
 			}
 		}
+
+		//removing node
 	}
 
 	class Node{
-			Node next;
-			int neighbourIndex;
+		Node next;
+		int neighbourIndex;
 
-			public Node(int neighbourIndex, Node next){
-				this.neighbourIndex = neighbourIndex;
-				this.next = next;
-			}
-
-			public void setNode(Node neighbour){
-				next = neighbour;
-			}
-
-			public Node getNode(){
-				return next;
-			}
-
-			public void setNeighbourInde(int neighbourIndex){
-				this.neighbourIndex = neighbourIndex;
-			}
-
-			public int getNeighbourIndex(){
-				return neighbourIndex;
-			}
+		public Node(int neighbourIndex, Node next){
+			this.neighbourIndex = neighbourIndex;
+			this.next = next;
 		}
 
-	public static void main(String[] args){
-		new UGraph();
+		public void setNode(Node neighbour){
+			next = neighbour;
+		}
+
+		public Node getNode(){
+			return next;
+		}
+
+		public void setNeighbourInde(int neighbourIndex){
+			this.neighbourIndex = neighbourIndex;
+		}
+
+		public int getNeighbourIndex(){
+			return neighbourIndex;
+		}
 	}
 }
