@@ -12,9 +12,11 @@ public class UGraph{
 		vertices = scan.nextInt();
 
 		graph = new Graph[vertices];
+		for(int i = 0; i<graph.length; i++){
+			graph[i] = new Graph();
+		}
 
 		for(int i = 0; i<graph.length; i++){ //add edges
-			graph[i] = new Graph();
 			while(input!=-1){
 				System.out.println("Enter valid edges for vertex "+i+":");
 				input = scan.nextInt();
@@ -22,6 +24,8 @@ public class UGraph{
 					break;
 				if(input>=0 && input<vertices){
 					graph[i].addneighbour(input);
+
+					graph[input].addneighbour(i);
 				}
 			}
 			input = 0;
