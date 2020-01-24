@@ -18,7 +18,7 @@ public class UGraph{
 
 		for(int i = 0; i<graph.length; i++){ //add edges
 			while(input!=-1){
-				System.out.println("Enter valid edges for vertex "+i+":");
+				System.out.println("Enter valid edges for vertex "+i+"(-1 to complete):");
 				input = scan.nextInt();
 				if(input==-1)
 					break;
