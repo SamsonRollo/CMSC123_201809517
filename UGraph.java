@@ -1,9 +1,10 @@
 
 public class UGraph{
 
-	protected int vertices;
+	protected int vertices=0;
 	protected int edges=0;
-	protected Vertex[] graph;
+	private Node vertex;
+	protected Vertex[] graph; // transform to list
 
 	public UGraph(int vertices){
 		graph = new Vertex[vertices];
@@ -14,6 +15,13 @@ public class UGraph{
 	}
 
 	//cahnge to link of vertices and adding is possible and removing
+	//sort vertices either neighbor or vertices itself
+
+	protected void addVertex(int vertexIndex){
+		Node newVertex =  new Node(vertexIndex, vertex);
+		vertex = newVertex;
+		//vertices++;
+	}
 
 	protected void addEdge(int v1, int v2){ //v1 = i, v2 = input
 		boolean eV1 = graph[v1].addNeighbour(v2);
@@ -22,6 +30,25 @@ public class UGraph{
 			eV1 = graph[v2].addNeighbour(v1);
 			edges++;
 		}
+	}
+
+	protected void removeVertex(int vertexIndex){//fixed needed
+		Node auxNode = vertex;
+		Node prevNode = null;
+
+		while(auxNode!=null){
+			if(auxNode.getVertexIndex()==vertexIndex){
+
+				if(prevNode!=null)
+					prevNode=auxNode.getNode();
+				break; 	
+			}
+			prevNode = auxNode;
+			auxNode = auxNode.getNode();
+		}
+	}
+
+	protected void removeEdge(int v1, int v2){
 
 	}
 
@@ -30,7 +57,7 @@ public class UGraph{
 		Node auxNode = graph[vertexIndex].neighbourNode;
 
 		while(auxNode!=null){
-			System.out.print(auxNode.getNeighbourIndex()+" ");
+			System.out.print(auxNode.getVertexIndex()+" ");
 			auxNode = auxNode.getNode();
 		}
 		System.out.println("");
@@ -40,7 +67,7 @@ public class UGraph{
 		boolean adjacent = false;
 		Node auxNode = graph[v1].neighbourNode;
 		while(auxNode!=null){
-			if(auxNode.getNeighbourIndex()==v2){
+			if(auxNode.getVertexIndex()==v2){
 				adjacent = true;
 				break;
 			}
@@ -66,7 +93,7 @@ public class UGraph{
 			Node auxNode = neighbourNode;
 
 			while(auxNode!=null){
-				if(auxNode.getNeighbourIndex()==neighbourIndex){
+				if(auxNode.getVertexIndex()==neighbourIndex){
 					nodeExist = true;
 					return nodeExist;
 				}
@@ -79,14 +106,16 @@ public class UGraph{
 			}
 			return nodeExist;
 		}
+
+		protected boolean removeNeighbour(){return false;}
 	}
 
 	class Node{
 		Node next;
-		int neighbourIndex;
+		int vertexIndex;
 
-		public Node(int neighbourIndex, Node next){
-			this.neighbourIndex = neighbourIndex;
+		public Node(int vertexIndex, Node next){
+			this.vertexIndex = vertexIndex;
 			this.next = next;
 		}
 
@@ -98,12 +127,12 @@ public class UGraph{
 			return next;
 		}
 
-		public void setNeighbourInde(int neighbourIndex){
-			this.neighbourIndex = neighbourIndex;
+		public void setVertexIndex(int vertexIndex){
+			this.vertexIndex = vertexIndex;
 		}
 
-		public int getNeighbourIndex(){
-			return neighbourIndex;
+		public int getVertexIndex(){
+			return vertexIndex;
 		}
 	}
 }
