@@ -29,7 +29,7 @@ public class UGraphTester{
 
 		input = 0;
 		do{
-			System.out.print("\n\nCHoose\n\t1.Number of vertices\n\t2.Check list of adjacent vertices\nChoice:");
+			System.out.print("\n\nCHoose\n\t1.Number of vertices\n\t2.Check list of adjacent vertices\n\t3.Adjacency test\n\t4.Number of edges\nChoice:");
 			input = scan.nextInt();
 
 			switch(input){
@@ -51,6 +51,7 @@ public class UGraphTester{
 						else 
 							System.out.println(v1+" and "+v2+" :"+graph.isAdjacent(v1,v2));
 						break;
+				case 4: System.out.println("Number of edges: "+graph.edges+"\n"); break;
 			}
 
 			input = 0;

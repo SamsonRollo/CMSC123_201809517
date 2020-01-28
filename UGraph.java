@@ -2,7 +2,7 @@
 public class UGraph{
 
 	protected int vertices;
-	protected int edges;
+	protected int edges=0;
 	protected Vertex[] graph;
 
 	public UGraph(int vertices){
@@ -13,9 +13,16 @@ public class UGraph{
 			graph[i] = new Vertex();
 	}
 
+	//cahnge to link of vertices and adding is possible and removing
+
 	protected void addEdge(int v1, int v2){ //v1 = i, v2 = input
-		graph[v1].addNeighbour(v2);
-		graph[v2].addNeighbour(v1);
+		boolean eV1 = graph[v1].addNeighbour(v2);
+		
+		if(eV1==false){
+			eV1 = graph[v2].addNeighbour(v1);
+			edges++;
+		}
+
 	}
 
 	protected void printGraph(int vertexIndex){
@@ -48,11 +55,11 @@ public class UGraph{
 
 		public Vertex(){}
 
-		public void addNeighbour(int neighbourIndex){
+		public boolean addNeighbour(int neighbourIndex){
 			//check if neighbor is valid and already exists
 			if(neighbourNode==null){
 				neighbourNode = new Node(neighbourIndex, null);
-				return;
+				return false;
 			}
 
 			boolean nodeExist = false;
@@ -61,7 +68,7 @@ public class UGraph{
 			while(auxNode!=null){
 				if(auxNode.getNeighbourIndex()==neighbourIndex){
 					nodeExist = true;
-					break;
+					return nodeExist;
 				}
 				auxNode = auxNode.getNode();
 			}
@@ -70,9 +77,8 @@ public class UGraph{
 				Node newNode = new Node(neighbourIndex, neighbourNode);
 				neighbourNode = newNode;
 			}
+			return nodeExist;
 		}
-
-		//removing node
 	}
 
 	class Node{
