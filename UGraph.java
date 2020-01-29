@@ -3,7 +3,7 @@ public class UGraph{
 
 	protected int vertices=0;
 	protected int edges=0;
-	private Node vertex;
+	private int size=0;
 	protected Vertex[] graph; // transform to list
 
 	public UGraph(int vertices){
@@ -14,45 +14,99 @@ public class UGraph{
 			graph[i] = new Vertex();
 	}
 
+	public UGraph(int size, boolean dynamic){ //used on modified functions
+		this.size = size;
+		graph = new Vertex[size];
+
+		 for(int i = 0; i<size; i++)
+		 	graph[i] = new Vertex();
+	}
+
 	//cahnge to link of vertices and adding is possible and removing
 	//sort vertices either neighbor or vertices itself
 
-	protected void addVertex(int vertexIndex){
-		Node newVertex =  new Node(vertexIndex, vertex);
-		vertex = newVertex;
-		//vertices++;
+	protected void addVertex(String name){ //dArray used, list might take O(V) on some processes
+		if(vertices+1==size){
+			Vertex[] newGraph = new Vertex[size++];
+
+			for(int i=0; i>newGraph.length-1; i++){
+				newGraph[i] = graph[i];
+			}
+			newGraph[size-1] = new Vertex(name);//edit
+		}
+		else
+			graph[vertices].setVertexName(name);
+		vertices++;
 	}
 
-	protected void addEdge(int v1, int v2){ //v1 = i, v2 = input
-		boolean eV1 = graph[v1].addNeighbour(v2);
+	protected void addEdge(String v1, String v2){ //v1 = i, v2 = input
+		int index1 = indexRetriever(v1);
+		int index2 = indexRetriever(v2);
+
+		if(index1==-1 || index2==-1)
+			return;
+
+		boolean eV1 = graph[index1].addNeighbour(index2);
 		
 		if(eV1==false){
-			eV1 = graph[v2].addNeighbour(v1);
+			eV1 = graph[index2].addNeighbour(index1);
 			edges++;
 		}
 	}
 
-	protected void removeVertex(int vertexIndex){//fixed needed
-		Node auxNode = vertex;
-		Node prevNode = null;
+	protected void removeVertex(String vertex){//fixed needed
+		int vIndex = indexRetriever(vertex);
 
-		while(auxNode!=null){
-			if(auxNode.getVertexIndex()==vertexIndex){
+		if(vIndex==-1)
+			return;
 
-				if(prevNode!=null)
-					prevNode=auxNode.getNode();
-				break; 	
+		Node neighbours = graph[vIndex].neighbourNode;
+
+		while(neighbours!=null){
+			removeEdge(vIndex, neighbours.getVertexIndex()); //v, n
+			neighbours = neighbours.getNode();
+		}
+		vertices--;
+	}
+
+	private void removeEdge(int v1, int v2){
+		Node auxNode = graph[v2].neighbourNode;
+		Node prev = null;
+
+		while(auxNode.getNode()!= null){
+			if(auxNode.getVertexIndex()==v1){
+				if(prev==null){//first element on the list
+					graph[v2].neighbourNode = auxNode.getNode();
+					return;
+				}
+				else{
+					prev.setNode(auxNode.getNode());
+					return;
+				}
 			}
-			prevNode = auxNode;
+
+			prev = auxNode;
 			auxNode = auxNode.getNode();
 		}
 	}
 
-	protected void removeEdge(int v1, int v2){
+	protected void removeEdge(String v1, String v2){
+		int v1I = indexRetriever(v1);
+		int v2I = indexRetriever(v2);
 
-	}
+		if(v1I==-1 || v2I==-1)
+			return;
 
-	protected void printGraph(int vertexIndex){
+		removeEdge(v1I,v2I);
+		removeEdge(v2I, v1I);
+
+		edges--;
+ 	}
+
+
+	protected void printGraph(String vertex){
+		int vertexIndex = indexRetriever(vertex);
+
 		System.out.print("Vertex "+vertexIndex+" has neighbours ");
 		Node auxNode = graph[vertexIndex].neighbourNode;
 
@@ -63,9 +117,18 @@ public class UGraph{
 		System.out.println("");
 	}
 
-	protected boolean isAdjacent(int v1, int v2){
+	protected boolean isAdjacent(String vertex1, String vertex2){
+		int v1 = indexRetriever(vertex1);
+		int v2 = indexRetriever(vertex2);
+
+		System.out.println("test "+v1+" "+v2);
+
+		if(v1==-1 || v2==-1)
+			return false;
+
 		boolean adjacent = false;
 		Node auxNode = graph[v1].neighbourNode;
+
 		while(auxNode!=null){
 			if(auxNode.getVertexIndex()==v2){
 				adjacent = true;
@@ -76,11 +139,28 @@ public class UGraph{
 		return adjacent;
 	}
 
+	private int indexRetriever(String name){
+		for(int i=0; i<graph.length; i++){
+			if(name.equals(graph[i].getVertexName()))
+				return i;
+		}
+
+		return -1;
+	}
+
 	private class Vertex{
 		Node neighbourNode = null;
 		String name;
 
 		public Vertex(){}
+
+		public Vertex(String name){
+			this.name = name;
+		}
+
+		public void setVertexName(String name){
+			this.name = name;
+		}
 
 		public boolean addNeighbour(int neighbourIndex){
 			//check if neighbor is valid and already exists
@@ -108,6 +188,10 @@ public class UGraph{
 		}
 
 		protected boolean removeNeighbour(){return false;}
+
+		protected String getVertexName(){
+			return name;
+		}
 	}
 
 	class Node{

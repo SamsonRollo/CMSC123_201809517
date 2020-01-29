@@ -6,52 +6,72 @@ public class UGraphTester{
 	
 	public UGraphTester(){
 		int input = 0;
+		String v1, v2;
 		Scanner scan = new Scanner(System.in);
-		System.out.print("Insert number of Vertices: ");
+		Scanner scanText = new Scanner(System.in);
+		System.out.print("Insert graph size: ");
 		input = scan.nextInt();
-		graph = new UGraph(input);
+		graph = new UGraph(input, true);
 
 		input = 0;
-		for(int i = 0; i<graph.vertices; i++){ //add edges
-			while(input!=-1){
-				System.out.println("Enter valid edges for Vertex "+i+" (-1 to complete):");
-				input = scan.nextInt();
-				if(input==-1)
-					break;
-				if(input>=0 && input<graph.vertices){
-					graph.addEdge(i,input);
-				}
-				else
-					System.out.println("Invalid input!");
-			}
-			input = 0;
-		}
+		// for(int i = 0; i<graph.vertices; i++){ //add edges
+		// 	while(input!=-1){
+		// 		System.out.println("Enter valid edges for Vertex "+i+" (-1 to complete):");
+		// 		input = scan.nextInt();
+		// 		if(input==-1)
+		// 			break;
+		// 		if(input>=0 && input<graph.vertices){
+		// 			graph.addEdge(i,input);
+		// 		}
+		// 		else
+		// 			System.out.println("Invalid input!");
+		// 	}
+		// 	input = 0;
+		// }
 
 		input = 0;
 		do{
-			System.out.print("\n\nCHoose\n\t1.Number of vertices\n\t2.Check list of adjacent vertices\n\t3.Adjacency test\n\t4.Number of edges\nChoice:");
+			System.out.print("\n\nCHoose\n\t1.Number of vertices\n\t2.Check list of adjacent vertices\n\t3.Adjacency test\n\t4.Number of edges\n\t5.Add Vertex\n\t6.Add Edge\n\t7.Remove vertex\n\t8.Remove Edge\n\t9.Check Connectivity\nChoice:");
 			input = scan.nextInt();
 
 			switch(input){
 				case 1: System.out.println("Number of vertices: "+graph.vertices);break;
 				case 2: System.out.print("Enter vertex: ");
-						input = scan.nextInt();
-						if(input<0 || input>graph.vertices-1)
-							System.out.println("Invalid vertex!");
+						String vertex = scan.nextLine();
+						graph.printGraph(vertex);
+						break;
+				case 3: System.out.println("Enter two vertices: ");
+						v1 = scanText.nextLine();
+						v2 = scanText.nextLine();
+						boolean b = graph.isAdjacent(v1,v2);
+						if(b)
+							System.out.println(v1+" and "+v2+" are adjacent");
 						else
-							graph.printGraph(input);
-						input = 2;
+							System.out.println(v1+" and "+v2+" are not adjacent");
 						break;
-				case 3: int v1=0, v2=0;
-						System.out.print("Enter two vertices: ");
-						v1 = scan.nextInt();
-						v2 = scan.nextInt();
-						if(v1<0 || v2<0 || v1>graph.vertices-1 || v2>graph.vertices-1)
-							System.out.println("Invalid vertex pair!");
-						else 
-							System.out.println(v1+" and "+v2+" :"+graph.isAdjacent(v1,v2));
+				case 4: System.out.println("Number of edges: "+graph.edges+"\n"); 
 						break;
-				case 4: System.out.println("Number of edges: "+graph.edges+"\n"); break;
+				case 5: System.out.print("Enter a new name of vertex: ");
+						v1 = scanText.nextLine();
+						graph.addVertex(v1);
+						break;
+				case 6: System.out.println("Enter a new edge (vertex pair): ");
+						v1 = scanText.nextLine();
+						v2 = scanText.nextLine();
+						graph.addEdge(v1, v2);
+						break;
+				case 7: System.out.print("Enter vertex name to be removed: ");
+						v1 = scan.nextLine();
+						graph.removeVertex(v1);
+				 		break;
+				case 8: System.out.println("Enter an edge (vertex pair) to be removed: ");
+						v1 = scanText.nextLine();
+						v2 = scanText.nextLine();
+						graph.removeEdge(v1,v2);
+						break;
+				case 9: System.out.println("Number of edges: "+graph.edges+"\n"); break;
+
+				default: break;
 			}
 
 			input = 0;
