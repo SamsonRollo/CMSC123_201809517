@@ -26,30 +26,34 @@ public class UGraph{
 	//sort vertices either neighbor or vertices itself
 
 	protected void addVertex(String name){ //dArray used, list might take O(V) on some processes
-		if(vertices+1==size){
-			Vertex[] newGraph = new Vertex[size++];
+		if(vertices+1>size){
+			Vertex[] newGraph = new Vertex[++size];
 
-			for(int i=0; i>newGraph.length-1; i++){
+			for(int i=0; i<newGraph.length-1; i++){
 				newGraph[i] = graph[i];
 			}
 			newGraph[size-1] = new Vertex(name);//edit
+			graph = newGraph;
 		}
 		else
 			graph[vertices].setVertexName(name);
 		vertices++;
+
 	}
 
 	protected void addEdge(String v1, String v2){ //v1 = i, v2 = input
 		int index1 = indexRetriever(v1);
 		int index2 = indexRetriever(v2);
 
-		if(index1==-1 || index2==-1)
+		if(index1==-1 || index2==-1){
+			System.out.println("Invalid input");
 			return;
+		}
 
-		boolean eV1 = graph[index1].addNeighbour(index2);
+		boolean eV1 = graph[index1].addNeighbour(v2);
 		
 		if(eV1==false){
-			eV1 = graph[index2].addNeighbour(index1);
+			eV1 = graph[index2].addNeighbour(v1);
 			edges++;
 		}
 	}
@@ -57,26 +61,48 @@ public class UGraph{
 	protected void removeVertex(String vertex){//fixed needed
 		int vIndex = indexRetriever(vertex);
 
-		if(vIndex==-1)
+		if(vIndex==-1){
+			System.out.println("Invalid input");
 			return;
+		}
 
 		Node neighbours = graph[vIndex].neighbourNode;
 
 		while(neighbours!=null){
-			removeEdge(vIndex, neighbours.getVertexIndex()); //v, n
+			removeEdgeInner(vertex, neighbours.getVertexName()); //v, n
 			neighbours = neighbours.getNode();
 		}
+
+		graph[vIndex] = null;
+
+		if(vertices==size)
+			shiftDown(vIndex);
+
 		vertices--;
 	}
 
-	private void removeEdge(int v1, int v2){
-		Node auxNode = graph[v2].neighbourNode;
+	private void shiftDown(int index){
+		Vertex[] down = new Vertex[size-1];
+
+		for(int i=0, j=0; i<vertices-1; i++, j++){
+			if(i==index)
+				j++;
+			down[i]=graph[j];
+		}
+
+		graph = down;
+	}
+
+	private void removeEdgeInner(String v1, String v2){ //edge not removed
+		int v4 = indexRetriever(v2);
+		Node auxNode = graph[v4].neighbourNode;
 		Node prev = null;
 
-		while(auxNode.getNode()!= null){
-			if(auxNode.getVertexIndex()==v1){
+		while(auxNode!= null){
+
+			if(v1.equals(auxNode.getVertexName())){
 				if(prev==null){//first element on the list
-					graph[v2].neighbourNode = auxNode.getNode();
+					graph[v4].neighbourNode = auxNode.getNode();
 					return;
 				}
 				else{
@@ -94,11 +120,15 @@ public class UGraph{
 		int v1I = indexRetriever(v1);
 		int v2I = indexRetriever(v2);
 
-		if(v1I==-1 || v2I==-1)
-			return;
+		System.out.println(v1I+" "+v2I);
 
-		removeEdge(v1I,v2I);
-		removeEdge(v2I, v1I);
+		if(v1I==-1 || v2I==-1){
+			System.out.println("Invalid input");
+			return;
+		}
+
+		removeEdgeInner(v1,v2);
+		removeEdgeInner(v2, v1);
 
 		edges--;
  	}
@@ -107,36 +137,44 @@ public class UGraph{
 	protected void printGraph(String vertex){
 		int vertexIndex = indexRetriever(vertex);
 
-		System.out.print("Vertex "+vertexIndex+" has neighbours ");
+		if(vertexIndex==-1){
+			System.out.println("Invalid input");
+			return;
+		}
+
+		System.out.print("Vertex "+vertex+" has neighbours ");
 		Node auxNode = graph[vertexIndex].neighbourNode;
 
 		while(auxNode!=null){
-			System.out.print(auxNode.getVertexIndex()+" ");
+			System.out.print(auxNode.getVertexName()+" ");
 			auxNode = auxNode.getNode();
 		}
 		System.out.println("");
 	}
 
-	protected boolean isAdjacent(String vertex1, String vertex2){
+	protected int isAdjacent(String vertex1, String vertex2){
 		int v1 = indexRetriever(vertex1);
 		int v2 = indexRetriever(vertex2);
 
-		System.out.println("test "+v1+" "+v2);
+		if(v1==-1 || v2==-1){
+			System.out.println("Invalid input");
+			return -1;
+		}
 
-		if(v1==-1 || v2==-1)
-			return false;
-
-		boolean adjacent = false;
 		Node auxNode = graph[v1].neighbourNode;
 
 		while(auxNode!=null){
-			if(auxNode.getVertexIndex()==v2){
-				adjacent = true;
-				break;
+			int v3 = indexRetriever(auxNode.getVertexName());
+			if(v3==v2){
+				return 1;
 			}
 			auxNode = auxNode.getNode();
 		}
-		return adjacent;
+		return 0;
+	}
+
+	private String nameRetriever(int index){
+		return graph[index].getVertexName();
 	}
 
 	private int indexRetriever(String name){
@@ -162,10 +200,10 @@ public class UGraph{
 			this.name = name;
 		}
 
-		public boolean addNeighbour(int neighbourIndex){
+		public boolean addNeighbour(String neighbourName){
 			//check if neighbor is valid and already exists
 			if(neighbourNode==null){
-				neighbourNode = new Node(neighbourIndex, null);
+				neighbourNode = new Node(neighbourName, null);
 				return false;
 			}
 
@@ -173,7 +211,7 @@ public class UGraph{
 			Node auxNode = neighbourNode;
 
 			while(auxNode!=null){
-				if(auxNode.getVertexIndex()==neighbourIndex){
+				if(auxNode.getVertexName()==neighbourName){
 					nodeExist = true;
 					return nodeExist;
 				}
@@ -181,7 +219,7 @@ public class UGraph{
 			}
 
 			if(nodeExist==false){
-				Node newNode = new Node(neighbourIndex, neighbourNode);
+				Node newNode = new Node(neighbourName, neighbourNode);
 				neighbourNode = newNode;
 			}
 			return nodeExist;
@@ -197,9 +235,10 @@ public class UGraph{
 	class Node{
 		Node next;
 		int vertexIndex;
+		String vertexName;
 
-		public Node(int vertexIndex, Node next){
-			this.vertexIndex = vertexIndex;
+		public Node(String vertexName, Node next){
+			this.vertexName = vertexName;
 			this.next = next;
 		}
 
@@ -211,12 +250,12 @@ public class UGraph{
 			return next;
 		}
 
-		public void setVertexIndex(int vertexIndex){
-			this.vertexIndex = vertexIndex;
+		public void setVertexName(String vertexName){
+			this.vertexName = vertexName;
 		}
 
-		public int getVertexIndex(){
-			return vertexIndex;
+		public String getVertexName(){
+			return vertexName;
 		}
 	}
 }

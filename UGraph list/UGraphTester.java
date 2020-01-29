@@ -37,17 +37,19 @@ public class UGraphTester{
 			switch(input){
 				case 1: System.out.println("Number of vertices: "+graph.vertices);break;
 				case 2: System.out.print("Enter vertex: ");
-						String vertex = scan.nextLine();
+						String vertex = scanText.nextLine();
 						graph.printGraph(vertex);
 						break;
 				case 3: System.out.println("Enter two vertices: ");
 						v1 = scanText.nextLine();
 						v2 = scanText.nextLine();
-						boolean b = graph.isAdjacent(v1,v2);
-						if(b)
+						int b = graph.isAdjacent(v1,v2);
+						if(b==1)
 							System.out.println(v1+" and "+v2+" are adjacent");
-						else
+						else if(b==0)
 							System.out.println(v1+" and "+v2+" are not adjacent");
+						else
+							System.out.println("Edge/vertex not valid!");
 						break;
 				case 4: System.out.println("Number of edges: "+graph.edges+"\n"); 
 						break;
@@ -61,7 +63,7 @@ public class UGraphTester{
 						graph.addEdge(v1, v2);
 						break;
 				case 7: System.out.print("Enter vertex name to be removed: ");
-						v1 = scan.nextLine();
+						v1 = scanText.nextLine();
 						graph.removeVertex(v1);
 				 		break;
 				case 8: System.out.println("Enter an edge (vertex pair) to be removed: ");
