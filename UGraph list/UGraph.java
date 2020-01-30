@@ -1,3 +1,4 @@
+import java.util.Stack;
 
 public class UGraph{
 
@@ -173,6 +174,10 @@ public class UGraph{
 		return 0;
 	}
 
+	protected boolean isConnected(String v1, String v2){
+		return isConnected(indexRetriever(v1),indexRetriever(v2));
+	}
+
 	private String nameRetriever(int index){
 		return graph[index].getVertexName();
 	}
@@ -184,6 +189,34 @@ public class UGraph{
 		}
 
 		return -1;
+	}
+
+	private boolean isConnected(int v1, int v2){
+		boolean[] isVisited = new boolean[vertices];
+		Stack<Integer> adjVertices = new Stack<>();
+		adjVertices.push(v1);
+
+		for(int i=0; i<vertices; i++){
+			Node neighbours = graph[adjVertices.peek()].neighbourNode;
+			isVisited[adjVertices.pop()]=true;
+
+			while(neighbours!=null){
+				int testIndex = indexRetriever(neighbours.getVertexName());
+
+				if(testIndex==v2)
+					return true;
+
+				if(!isVisited[testIndex])
+					adjVertices.push(testIndex);
+
+				neighbours = neighbours.getNode();
+			}
+
+			if(adjVertices.isEmpty())
+				return false;
+		}
+
+		return false;
 	}
 
 	private class Vertex{
@@ -224,8 +257,6 @@ public class UGraph{
 			}
 			return nodeExist;
 		}
-
-		protected boolean removeNeighbour(){return false;}
 
 		protected String getVertexName(){
 			return name;
