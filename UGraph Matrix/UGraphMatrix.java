@@ -1,3 +1,4 @@
+import java.util.Stack;
 
 public class UGraphMatrix{
 			
@@ -103,6 +104,10 @@ public class UGraphMatrix{
 		return edgeCount;
 	}
 
+	protected boolean isConnected(String v1, String v2){
+		return isConnected(vertexPosition(v1), vertexPosition(v2));
+	}
+
 	private int vertexPosition(String name){
 		for(int i=0; i<vertices.length; i++){
 			if(name.equals(vertices[i]))
@@ -146,6 +151,36 @@ public class UGraphMatrix{
 		}
 		relationTable = auxe;
 		edgeCount-=edge;
+	}
+
+	private boolean isConnected(int v1, int v2){
+		Stack<Integer> stack = new Stack<>();
+		boolean[] isVisited = new boolean[vertexCount];
+
+		if(v1==-1 || v2==-1)
+			return false;
+
+		if(relationTable[v1][v2])
+			return true;
+
+		stack.push(v1);
+
+		for(int v=0; v<vertexCount; v++){
+			int cur = stack.pop();
+			isVisited[cur] = true;
+
+			for(int i=0; i<vertexCount; i++){
+				if(relationTable[cur][i] && i==v2)
+					return true;
+				if(relationTable[cur][i])
+					stack.push(i);
+			}
+
+			if(stack.isEmpty())
+				return false;
+		}
+
+		return false;
 	}
 
 }

@@ -55,7 +55,14 @@ public class UGraphMatrixTester{
 						v2 = scanText.nextLine();
 						graph.removeEdge(v1,v2);
 						break;
-				//case 9: System.out.println("Number of edges: "+graph.edges+"\n"); break;
+				case 9: System.out.println("Enter two vertices: ");
+						v1 = scanText.nextLine();
+						v2 = scanText.nextLine();
+						if(graph.isConnected(v1,v2))
+							System.out.println(v1+" and "+v2+" are connected");
+						else
+							System.out.println(v1+" and "+v2+" are not connected");
+						break;
 
 				default: break;
 			}
