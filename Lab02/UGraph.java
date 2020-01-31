@@ -1,6 +1,3 @@
-import java.util.Stack;
-import java.util.Queue;
-import java.util.LinkedList;
 
 public class UGraph{
 
@@ -29,6 +26,11 @@ public class UGraph{
 	//sort vertices either neighbor or vertices itself
 
 	protected void addVertex(String name){ //dArray used, list might take O(V) on some processes
+		if(indexRetriever(name)!=-1){
+			System.out.println("vertex already exists");
+			return;
+		}
+
 		if(vertices+1>size){
 			Vertex[] newGraph = new Vertex[++size];
 
@@ -238,8 +240,9 @@ public class UGraph{
 			while(neighbours!=null){
 				int testIndex = indexRetriever(neighbours.getVertexName());
 
-				if(!isVisited[testIndex])
+				if(!isVisited[testIndex]){
 					stack.push(testIndex);
+				}
 
 				neighbours = neighbours.getNode();
 			}
@@ -251,15 +254,14 @@ public class UGraph{
 	}
 
 	protected void bfsTraversal(){
-		Queue<Integer> queue = new LinkedList<Integer>();
+		Queue<Integer> queue = new Queue<>();
 		boolean[] isVisited = new boolean[vertices];
 
-		queue.offer(0);
+		queue.enqueue(0);
 		System.out.print("\nBreadth-first Traversal order: ");
 
 		for(int i=0; i<vertices; i++){
-			int curIn = queue.peek();
-			queue.remove();
+			int curIn = queue.dequeue();
 			Node neighbours = graph[curIn].neighbourNode;
 			isVisited[curIn]=true;
 
@@ -268,13 +270,15 @@ public class UGraph{
 			while(neighbours!=null){
 				int testIndex = indexRetriever(neighbours.getVertexName());
 
-				if(!isVisited[testIndex])
-					queue.add(testIndex);
+				if(!isVisited[testIndex]){
+					isVisited[testIndex]=true;
+					queue.enqueue(testIndex);
+				}
 
 				neighbours = neighbours.getNode();
 			}
 
-			if(queue.poll()==null)
+			if(queue.isEmpty())
 				return;
 		}
  
@@ -326,7 +330,6 @@ public class UGraph{
 
 	class Node{
 		Node next;
-		int vertexIndex;
 		String vertexName;
 
 		public Node(String vertexName, Node next){
