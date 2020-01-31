@@ -172,7 +172,7 @@ public class UGraphMatrix{
 			for(int i=0; i<vertexCount; i++){
 				if(relationTable[cur][i] && i==v2)
 					return true;
-				if(relationTable[cur][i])
+				if(relationTable[cur][i] && !isVisited[i])
 					stack.push(i);
 			}
 
