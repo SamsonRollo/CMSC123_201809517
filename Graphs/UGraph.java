@@ -2,7 +2,7 @@ package Graphs;
 
 import java.util.Arrays;
 
-public class UGraph{
+public class UGraph implements Graph{
 
 	public int vertices=0;
 	public int edges=0;
@@ -229,6 +229,7 @@ public class UGraph{
 		}
 		return 0;
 	}
+	
 
 	public boolean isConnected(String edge){
 		String[] edgePair = edge.split(",");

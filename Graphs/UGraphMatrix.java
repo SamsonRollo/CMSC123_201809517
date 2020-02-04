@@ -1,6 +1,8 @@
-import java.util.Stack;
+package Graphs;
 
-public class UGraphMatrix{
+import java.util.Arrays;
+
+public class UGraphMatrix implements Graph{
 			
 	boolean[][] relationTable;
 	String[] vertices;
@@ -12,7 +14,15 @@ public class UGraphMatrix{
 		this.size = size;
 	}
 
-	protected void addVertex(String name){
+	public void addVertex(String name){
+		String[] verticesName = name.split(" ");
+
+		for(int i=0; i<verticesName.length; i++){
+			addV(verticesName[i]);
+		}
+	}
+
+	private void addV(String name){
 		if(vertexPosition(name)!=-1)
 			return;
 
@@ -37,7 +47,23 @@ public class UGraphMatrix{
 		vertexCount++;
 	}
 
-	protected void addEdge(String v1, String v2){
+	public void addEdge(String edge){
+		String[] edgesName = edge.split(" ");
+		String[] edgeSet;
+
+		for(int i=0; i<edgesName.length; i++){
+			edgeSet = edgesName[i].split(",");
+
+			if(edgeSet.length<2){
+				System.out.println("Invalid set of edges: "+Arrays.toString(edgeSet));
+				continue;
+			}
+
+			addE(edgeSet[0], edgeSet[1]);
+		}
+	}
+
+	private void addE(String v1, String v2){
 		int v1Index = vertexPosition(v1);
 		int v2Index = vertexPosition(v2);
 
@@ -50,8 +76,8 @@ public class UGraphMatrix{
 		edgeCount++;
 	}
 
-	protected void removeVertex(String name){
-		int vIndex = vertexPosition(name);
+	public void removeVertex(String vertex){
+		int vIndex = vertexPosition(vertex);
 
 		if(vIndex==-1)
 			return;
@@ -60,9 +86,21 @@ public class UGraphMatrix{
 		vertexCount--;
 	}
 
-	protected void removeEdge(String v1, String v2){
-		int v1Index = vertexPosition(v1);
-		int v2Index = vertexPosition(v2);
+	public void removeEdge(String edge){
+		String[] edgePair = edge.split(",");
+
+		if(edgePair.length!=2){
+			System.out.println("Invalid edge!");
+			return;
+		}
+
+		int v1Index = vertexPosition(edgePair[0]);
+		int v2Index = vertexPosition(edgePair[1]);
+
+		if(v1Index==-1 || v2Index==-1){
+			System.out.println("Invalid input");
+			return;
+		}
 
 		if(v1Index==-1 || v2Index==-1)
 			return;
@@ -73,9 +111,14 @@ public class UGraphMatrix{
 		edgeCount--;
 	}
 
-	protected int isAdjacent(String v1, String v2){
-		int v1Index = vertexPosition(v1);
-		int v2Index = vertexPosition(v2);
+	public int isAdjacent(String edge){
+		String[] pair = edge.split(",");
+
+		if(pair.length!=2)
+			return -1;
+
+		int v1Index = vertexPosition(pair[0]);
+		int v2Index = vertexPosition(pair[1]);
 
 		if(v1Index==-1 || v2Index==-1)
 			return -1;
@@ -85,8 +128,8 @@ public class UGraphMatrix{
 			return 0;
 	}
 
-	protected void adjacentVertices(String name){
-		int index = vertexPosition(name);
+	public void printNeighbours(String vertex){
+		int index = vertexPosition(vertex);
 
 		if(index==-1)
 			return;
@@ -96,16 +139,20 @@ public class UGraphMatrix{
 		}
 	}
 
-	protected int getVertices(){
+	public int numberOfVertices(){
 		return vertexCount;
 	}
 
-	protected int getEdges(){
+	public int numberOfEdges(){
 		return edgeCount;
 	}
 
-	protected boolean isConnected(String v1, String v2){
-		return isConnected(vertexPosition(v1), vertexPosition(v2));
+	public boolean isConnected(String edge){
+		String[] pair = edge.split(",");
+		if(pair.length!=2)
+			return false;
+
+		return isConnected(vertexPosition(pair[0]), vertexPosition(pair[1]));
 	}
 
 	private int vertexPosition(String name){
@@ -165,7 +212,7 @@ public class UGraphMatrix{
 
 		stack.push(v1);
 
-		for(int v=0; v<vertexCount; v++){
+		while(!stack.isEmpty()){
 			int cur = stack.pop();
 			isVisited[cur] = true;
 
@@ -175,9 +222,6 @@ public class UGraphMatrix{
 				if(relationTable[cur][i] && !isVisited[i])
 					stack.push(i);
 			}
-
-			if(stack.isEmpty())
-				return false;
 		}
 
 		return false;

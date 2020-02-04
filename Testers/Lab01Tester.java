@@ -60,10 +60,13 @@ public class Lab01Tester{
 						break;
 				case 4:	System.out.print("Enter two vertices separated by comma ',': "); //adjacency test
 						v1 = scanText.nextLine();
-						if(graph.isAdjacent(v1))
+						int b = graph.isAdjacent(v1);
+						if(b==1)
 							System.out.println(v1+" are adjacent");
-						else 
+						else if(b==0)
 							System.out.println(v1+" are not adjacent");
+						else
+							System.out.println("Edge/vertex not valid!");
 						break;
 				case 5: System.out.print("Enter two vertices separated by comma ',': "); //connectivity test
 						v1 = scanText.nextLine();
