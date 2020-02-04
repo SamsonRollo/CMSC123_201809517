@@ -1,4 +1,7 @@
+package Testers;
+
 import java.util.Scanner;
+import Graphs.*;
 
 public class Lab02Tester{
 
@@ -11,7 +14,7 @@ public class Lab02Tester{
 		Scanner scanText = new Scanner(System.in);
 		System.out.print("Insert graph size: ");
 		input = scan.nextInt();
-		graph = new UGraph(input, true);
+		graph = new UGraph(input);
 
 		do{
 			input = 0;
@@ -19,8 +22,8 @@ public class Lab02Tester{
 			input = scan.nextInt();
 
 			switch(input){
-				case 1: System.out.println("Number of vertices: "+graph.vertices);break; //vertexCount
-				case 2: System.out.println("Number of edges: "+graph.edges+"\n"); break; //edgeCount
+				case 1: System.out.println("Number of vertices: "+graph.numberOfVertices());break; //vertexCount
+				case 2: System.out.println("Number of edges: "+graph.numberOfEdges()+"\n"); break; //edgeCount
 				case 3: System.out.print("Enter vertex: "); //neghbourlist
 						String vertex = scanText.nextLine();
 						graph.printNeighbours(vertex);

@@ -1,3 +1,5 @@
+package Graphs;
+
 public class Node<T>{
 
 	Node<T> next = null;

@@ -1,21 +1,15 @@
+package Graphs;
+
 import java.util.Arrays;
 
 public class UGraph{
 
-	protected int vertices=0;
-	protected int edges=0;
+	public int vertices=0;
+	public int edges=0;
 	private int size=0;
-	protected Vertex[] graph;
+	public Vertex[] graph;
 
-	public UGraph(int vertices){
-		graph = new Vertex[vertices];
-		this.vertices = vertices;
-
-		for(int i = 0; i<vertices; i++)
-			graph[i] = new Vertex();
-	}
-
-	public UGraph(int size, boolean dynamic){ //used on modified functions
+	public UGraph(int size){ //used on modified functions
 		this.size = size;
 		graph = new Vertex[size];
 
@@ -23,7 +17,7 @@ public class UGraph{
 		 	graph[i] = new Vertex();
 	}
 
-	protected void addVertex(String name){ //dArray used, list might take O(V) on some processes
+	public void addVertex(String name){ //dArray used, list might take O(V) on some processes
 
 		String[] verticesName = name.split(" ");
 
@@ -52,7 +46,7 @@ public class UGraph{
 		vertices++;
 	}
 
-	protected void addEdge(String edge){ //v1 = i, v2 = input
+	public void addEdge(String edge){ //v1 = i, v2 = input
 
 		String[] edgesName = edge.split(" ");
 		String[] edgeSet;
@@ -105,7 +99,7 @@ public class UGraph{
 		}
 	}
 
-	protected void removeVertex(String vertex){//fixed needed
+	public void removeVertex(String vertex){//fixed needed
 		int vIndex = indexRetriever(vertex);
 
 		if(vIndex==-1){
@@ -163,7 +157,7 @@ public class UGraph{
 		}
 	}
 
-	protected void removeEdge(String edge){
+	public void removeEdge(String edge){
 
 		String[] edgePair = edge.split(",");
 
@@ -187,7 +181,7 @@ public class UGraph{
 		edges--;
  	}
 
-	protected void printNeighbours(String vertex){
+	public void printNeighbours(String vertex){
 		int vertexIndex = indexRetriever(vertex);
 
 		if(vertexIndex==-1){
@@ -205,7 +199,7 @@ public class UGraph{
 		System.out.println("");
 	}
  
-	protected int isAdjacent(String edge){
+	public int isAdjacent(String edge){
 
 		String[] edgePair = edge.split(",");
 
@@ -236,7 +230,7 @@ public class UGraph{
 		return 0;
 	}
 
-	protected boolean isConnected(String edge){
+	public boolean isConnected(String edge){
 		String[] edgePair = edge.split(",");
 
 		if(edgePair.length!=2){
@@ -291,7 +285,54 @@ public class UGraph{
 		return false;
 	}
 
-	protected void dfsTraversal(String startVertex){ //non func on  scyles
+	public int[] SSUPL(String initialVertex){
+		String[] nodevalues = new String[vertices];
+		int[] pathLength = new int[vertices];
+		Queue<Integer> queue = new Queue<>();
+
+		if(indexRetriever(initialVertex)==-1){
+			System.out.println("Invalid initial Vertex!");
+			return pathLength;
+		}
+
+		queue.enqueue(indexRetriever(initialVertex));
+		nodevalues[queue.peek()] = "Head";
+
+		while(!queue.isEmpty()){
+			String currentHead = nameRetriever(queue.peek());
+			Node neighbours = graph[queue.dequeue()].neighbourNode;
+
+			while(neighbours!=null){
+				int currentNeighbourIndex = indexRetriever(neighbours.getVertexName());
+
+				if(nodevalues[currentNeighbourIndex]==null){
+					nodevalues[currentNeighbourIndex] = currentHead;
+					queue.enqueue(currentNeighbourIndex);
+				}
+				neighbours = neighbours.getNode();
+			}
+		}
+
+		for(int i=0; i<vertices; i++){
+			try{
+				pathLength[i] = headSearcher(nodevalues, initialVertex, 0, i);
+			}catch(Exception e){pathLength[i]=-1;};
+		}
+
+		return pathLength;
+	}
+
+	private int headSearcher(String[] values, String head, int length, int currentIndex){
+		if(values[currentIndex].equals("Head"))
+			return 0;
+		else if(values[currentIndex].equals(head))
+			return length+1;
+		else
+			return headSearcher(values, head, length+1, indexRetriever(values[currentIndex]));
+
+	}
+
+	public void dfsTraversal(String startVertex){ //non func on  scyles
 		if(indexRetriever(startVertex)==-1){
 			System.out.println("Invalid Vertex!");
 			return;
@@ -324,7 +365,7 @@ public class UGraph{
 		}
 	}
 
-	protected void bfsTraversal(String startVertex){
+	public void bfsTraversal(String startVertex){
 		if(indexRetriever(startVertex)==-1){
 			System.out.println("Invalid vertex!");
 			return;
@@ -359,6 +400,14 @@ public class UGraph{
 		}
 	}
 
+	public int numberOfVertices(){
+		return vertices;
+	}
+
+	public int numberOfEdges(){
+		return edges;
+	}
+
 	private class Vertex{
 		Node neighbourNode = null;
 		String name;
@@ -369,7 +418,7 @@ public class UGraph{
 			this.name = name;
 		}
 
-		protected boolean addNeighbour(String neighbourName, int weight){
+		public boolean addNeighbour(String neighbourName, int weight){
 			//check if neighbor is valid and already exists
 			if(neighbourNode==null){
 				neighbourNode = new Node(neighbourName, null, weight);
@@ -391,11 +440,11 @@ public class UGraph{
 			return false;
 		}
 
-		protected void setVertexName(String name){
+		public void setVertexName(String name){
 			this.name = name;
 		}
 
-		protected String getVertexName(){
+		public String getVertexName(){
 			return name;
 		}
 
@@ -427,7 +476,7 @@ public class UGraph{
 		}
 	}
 
-	class Node{
+	private class Node{
 		Node next;
 		String vertexName;
 		int weight=0;

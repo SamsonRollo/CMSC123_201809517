@@ -1,3 +1,4 @@
+package Graphs;
 
 public class Stack<T>{
 	Node<T> first= null;
