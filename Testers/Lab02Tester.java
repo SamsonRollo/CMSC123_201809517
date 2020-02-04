@@ -12,10 +12,15 @@ public class Lab02Tester{
 		String v1;
 		Scanner scan = new Scanner(System.in);
 		Scanner scanText = new Scanner(System.in);
-		System.out.print("Insert graph size: ");
-		try{
-			input = scan.nextInt();
-		}catch(Exception e){input=1;};
+		
+		do{		
+			input=0;
+			System.out.print("Insert graph size: ");
+			try{
+				input = scan.nextInt();
+			}catch(Exception e){scan.next();};
+		}while(input<1);
+		
 		graph = new UGraph(input);
 
 		do{
@@ -23,7 +28,7 @@ public class Lab02Tester{
 			System.out.print("\n\nCHOOSE(-1 to exit)\n\t1.Number of vertices\n\t2.Number of edges\n\t3.Check list of adjacent vertices\n\t4.Adjacency test\n\t5.Check Connectivity\n\t6.Add Vertex\n\t7.Add Edge\n\t8.Remove vertex\n\t9.Remove Edge\n\t10.DFS\n\t11.BFS\nChoice:");
 			try{	
 				input = scan.nextInt();
-			}catch(Exception f){input=0;};
+			}catch(Exception f){scan.next();};
 
 			switch(input){
 				case 1: System.out.println("Number of vertices: "+graph.numberOfVertices());break; //vertexCount
