@@ -13,13 +13,17 @@ public class Lab02Tester{
 		Scanner scan = new Scanner(System.in);
 		Scanner scanText = new Scanner(System.in);
 		System.out.print("Insert graph size: ");
-		input = scan.nextInt();
+		try{
+			input = scan.nextInt();
+		}catch(Exception e){input=1;};
 		graph = new UGraph(input);
 
 		do{
 			input = 0;
 			System.out.print("\n\nCHOOSE(-1 to exit)\n\t1.Number of vertices\n\t2.Number of edges\n\t3.Check list of adjacent vertices\n\t4.Adjacency test\n\t5.Check Connectivity\n\t6.Add Vertex\n\t7.Add Edge\n\t8.Remove vertex\n\t9.Remove Edge\n\t10.DFS\n\t11.BFS\nChoice:");
-			input = scan.nextInt();
+			try{	
+				input = scan.nextInt();
+			}catch(Exception f){input=0;};
 
 			switch(input){
 				case 1: System.out.println("Number of vertices: "+graph.numberOfVertices());break; //vertexCount
