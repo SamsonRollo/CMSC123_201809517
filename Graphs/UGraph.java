@@ -285,22 +285,22 @@ public class UGraph{
 		return false;
 	}
 
-	public int[] SSUPL(String initialVertex){
-		String[] nodevalues = new String[vertices];
-		int[] pathLength = new int[vertices];
+	public int[] SSUPL(UGraph g, String s){
+		String[] nodevalues = new String[g.numberOfVertices()];
+		int[] pathLength = new int[g.numberOfVertices()];
 		Queue<Integer> queue = new Queue<>();
 
-		if(indexRetriever(initialVertex)==-1){
+		if(indexRetriever(s)==-1){
 			System.out.println("Invalid initial Vertex!");
 			return pathLength;
 		}
 
-		queue.enqueue(indexRetriever(initialVertex));
+		queue.enqueue(indexRetriever(s));
 		nodevalues[queue.peek()] = "Head";
 
 		while(!queue.isEmpty()){
 			String currentHead = nameRetriever(queue.peek());
-			Node neighbours = graph[queue.dequeue()].neighbourNode;
+			Node neighbours = g.graph[queue.dequeue()].neighbourNode;
 
 			while(neighbours!=null){
 				int currentNeighbourIndex = indexRetriever(neighbours.getVertexName());
@@ -315,7 +315,7 @@ public class UGraph{
 
 		for(int i=0; i<vertices; i++){
 			try{
-				pathLength[i] = headSearcher(nodevalues, initialVertex, 0, i);
+				pathLength[i] = headSearcher(nodevalues, s, 0, i);
 			}catch(Exception e){pathLength[i]=-1;};
 		}
 
@@ -329,7 +329,6 @@ public class UGraph{
 			return length+1;
 		else
 			return headSearcher(values, head, length+1, indexRetriever(values[currentIndex]));
-
 	}
 
 	public void dfsTraversal(String startVertex){ //non func on  scyles
@@ -402,6 +401,10 @@ public class UGraph{
 
 	public int numberOfVertices(){
 		return vertices;
+	}
+
+	public UGraph getGraph(){
+		return this;
 	}
 
 	public int numberOfEdges(){
