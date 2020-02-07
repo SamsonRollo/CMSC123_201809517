@@ -82,7 +82,7 @@ public class Lab04Tester{
 				// 		break;
 				case 12:System.out.print("Enter Inital vertex: "); //follows the sequencing of the input vertices
 						v1 = scanText.nextLine();
-						System.out.println(Arrays.toString(graph.tSort(graph)));
+						System.out.println(graph.isDaG(graph));
 						break;
 
 				default: break;

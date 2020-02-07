@@ -344,7 +344,7 @@ public class DGraph implements Graph{
 			System.out.println("pass"+in);
 			list[i] = nameRetriever(in);
 			DGraph k = g;
-			
+
 			k.removeVertex(nameRetriever(in));
 		}
 
@@ -359,6 +359,41 @@ public class DGraph implements Graph{
 				queue.enqueue(i);
 		} 
 		return queue.dequeue();
+	}
+
+	//test
+	public boolean isDaG(DGraph g){
+		return isDAG(g);
+	}
+
+	private boolean isDAG(DGraph g){
+		int[] vertices = new int[g.numberOfVertices()];
+
+		Stack<Integer> stack = new Stack<>();
+		stack.push(0);
+		vertices[0]++;
+
+		while(!stack.isEmpty()){
+			int curIn = stack.pop();
+			Node neighbours = g.graph[curIn].neighbourNode;
+
+			while(neighbours!=null){
+				int testIndex = indexRetriever(neighbours.getVertexName());
+
+				vertices[testIndex]++;
+				stack.push(testIndex);
+
+				neighbours = neighbours.getNode();
+			}
+		}
+
+		for (int i=0; i<g.numberOfVertices(); i++ ) {
+			System.out.println(i+" "+vertices[i]);
+			if(vertices[i]>1)
+				return false;
+		}
+
+		return true;
 	}
 
 	private int headSearcher(String[] values, String head, int length, int currentIndex){
