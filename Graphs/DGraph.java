@@ -1,15 +1,18 @@
 package Graphs;
 
 import java.util.Arrays;
+import java.util.Scanner;
+import java.io.*;
+import Exceptions.*;
+import Algorithms.*;
 
 public class DGraph implements Graph{
 
-	public int[] vertices = new int[1];
-	public int[] edges = new int[1];
+	public int vertices = 0, edges = 0;
 	private int size;
 	public Vertex[] graph;
 
-	public DGraph(int size){ //used on modified functions
+	public DGraph(int size){
 		this.size = size;
 		graph = new Vertex[size];
 
@@ -18,38 +21,50 @@ public class DGraph implements Graph{
 		}
 	}
 
+	public void readGraph(String fileName){
+		try{
+			BufferedReader reader = new BufferedReader(new FileReader(new File("Source/"+fileName).getAbsoluteFile()));
+			boolean v = false;
+			String line;
+
+			while((line = reader.readLine())!=null){
+				if(line.startsWith("EDGES")){
+					v = true;
+					continue;
+				}
+				if(!v)
+					addVertex(line);
+				else
+					addEdge(line);
+			}
+		}catch(Exception f){System.out.println("Error with file accessing or reading!");};
+	}
+
 	public void addVertex(String name){ //dArray used, list might take O(V) on some processes
 		String[] verticesName = name.split(" ");
+		double executionTime = 0.0;
+		String vertexName = null;
 
 		for(int i=0; i<verticesName.length; i++){
-			addV(verticesName[i],0);
-		}
-	}
-
-	public void addVertexWET(String name){ //merge to addVertex
-		String[] verticesName = name.split(" ");
-
-		for(int i=0; i<verticesName.length; i++){
-			String[] vertex = verticesName[i].split(":");
-			double time = 0.0;
-			if(vertex.length!=2){
-				System.out.println("Invalid Vertex: "+ Arrays.toString(vertex));
-				continue;
-			}
+			vertexName = verticesName[i];
+			if(verticesName[i].contains(":")){
+				String[] vertexComponent = verticesName[i].split(":");
+				vertexName = vertexComponent[0];
+				try{
+					executionTime = Double.parseDouble(vertexComponent[1]);
+				}catch(NumberFormatException n){System.out.println("Illegal execution time input");continue;};
+			}	
 			try{
-				time = Double.parseDouble(vertex[1]);
-			}catch(NumberFormatException n){System.out.println("Illegal execution time input");continue;};
-			addV(vertex[0], time);
+				addV(vertexName,executionTime);
+			}catch(VertexAlreadyExistsException v){System.out.println(v);};
 		}
 	}
 
-	private void addV(String name, double time){
-		if(indexRetriever(name, graph)!=-1){
-			System.out.println("Vertex "+name+" already exists");
-			return;
-		}
-
-		if(vertices[0]+1>size){
+	private void addV(String name, double time) throws VertexAlreadyExistsException{
+		if(indexRetriever(name)!=-1)
+			throw new VertexAlreadyExistsException(name);
+			
+		if(vertices+1>size){
 			Vertex[] newGraph = new Vertex[++size];
 
 			for(int i=0; i<newGraph.length-1; i++){
@@ -59,9 +74,10 @@ public class DGraph implements Graph{
 			graph = newGraph;
 		}
 		else
-			graph[vertices[0]].setVertexName(name);
-		graph[indexRetriever(name, graph)].setExecTime(time);
-		vertices[0]++;
+			graph[vertices].setVertexName(name);
+
+		vertices++;
+		graph[indexRetriever(name)].setExecTime(time);
 	}
 
 	public void addEdge(String edge){ //v1 = i, v2 = input
@@ -82,25 +98,24 @@ public class DGraph implements Graph{
 					weight = "0";
 				else
 					weight = edgeSet[2];
-			}catch(Exception f){
-				weight = "0";
-			}
-			addE(edgeSet[0], edgeSet[1], weight);
+			}catch(Exception f){weight = "0";};
+
+			try{
+				addE(edgeSet[0], edgeSet[1], weight);
+			}catch(InvalidEdgeException ie){System.out.println(ie);};
 		}
 	}
 
-	private void addE(String v1,String v2, String weight){
-		int index1 = indexRetriever(v1, graph);
-		int index2 = indexRetriever(v2, graph);
-		int weightInt;
+	private void addE(String v1,String v2, String weight)throws InvalidEdgeException{
+		int index1 = indexRetriever(v1);
+		int index2 = indexRetriever(v2);
+		double weightInt;
 
-		if(index1==-1 || index2==-1){
-			System.out.println("Invalid edge "+v1+"-"+v2+"!");
-			return;
-		}
+		if(index1==-1 || index2==-1)
+			throw new InvalidEdgeException("One or more of the vertex does not exists.");
 
 		try{
-			weightInt = Integer.parseInt(weight);
+			weightInt = Double.parseDouble(weight);
 		}catch(NumberFormatException e){
 			System.out.println("Invalid weight input on edge "+v1+"-"+v2+"!");
 			return;
@@ -110,578 +125,314 @@ public class DGraph implements Graph{
 		if(eV1==false){
 			graph[index1].outDegree++;
 			graph[index2].inDegree++;
-			edges[0]++;
+			edges++;
 		}
 	}
 
 	public void removeVertex(String vertex){
-		graph = removeVertexING(vertex, graph, vertices, edges, false);
+		try{
+			removeVertexAux(vertex);
+		}catch(InvalidVertexException iv){System.out.println(iv);};
 	}
 
-	private Vertex[] removeVertexING(String vertex, Vertex[] graphV, int[] verticesC, int[] edgesC, boolean copy){//fixed needed
-		int vIndex = indexRetriever(vertex, graphV);
-
-		if(vIndex==-1){
-			System.out.println("Invalid input");
-			return graphV;
-		}
-
-		Node neighbours = graphV[vIndex].neighbourNode;
-		//removing from indegree
-		for(int i=0; i<graphV.length; i++){
-			if(graphV[i]==null)
-				continue;
-
-			neighbours = graphV[i].neighbourNode;
-
-			if(i==vIndex){
-				while(neighbours!=null){
-					if(copy){
-						graphV[indexRetriever(neighbours.getVertexName(), graphV)].inDegreeC--;
-						graphV[vIndex].outDegreeC--;
-					}
-					else{
-						graphV[indexRetriever(neighbours.getVertexName(), graphV)].inDegree--;
-						graphV[vIndex].outDegree--;
-					}
-					edgesC[0]--;
-					neighbours = neighbours.getNode();
-				}
-			}
+	private void removeVertexAux(String vertex) throws InvalidVertexException{//fixed needed
+		int vertexIndex = indexRetriever(vertex);
+		if(vertexIndex==-1)
+			throw new InvalidVertexException(vertex+" does not exist.");
 			
-			else
-				while(neighbours!=null){
-					if(vertex.equals(neighbours.getVertexName())){
-						if(copy){
-							graphV[indexRetriever(neighbours.getVertexName(), graphV)].outDegreeC--;
-							graphV[vIndex].inDegreeC--;
-						}
-						else{
-							graphV[indexRetriever(neighbours.getVertexName(), graphV)].outDegree--;
-							graphV[vIndex].inDegree--;
-						}
-						edgesC[0]--;
-					}
-				neighbours = neighbours.getNode();
-			}
+		VNode neighbours = graph[vertexIndex].getNeighbour();
+		while(neighbours!=null){
+			removeEdgeInner(vertex, neighbours.getVertexName()); //v, n
+			neighbours = neighbours.getVNode();
 		}
-
-		graphV[vIndex] = null;
-		graphV = shiftDown(vIndex, graphV);
-
-		verticesC[0]--;
-		return graphV;
+		graph[vertexIndex] = null;
+		shiftDown(vertexIndex);
+		vertices--;
 	}
 
-	private Vertex[] shiftDown(int index, Vertex[] graphV){
-		Vertex[] down = new Vertex[graphV.length-1];
-
-		for(int i=0, j=0; i<graphV.length-1; i++, j++){
+	private void shiftDown(int index){
+		Vertex[] down = new Vertex[size-1];
+		for(int i=0, j=0; i<vertices-1; i++, j++){
 			if(i==index)
 				j++;
-			down[i]=graphV[j];
+			down[i]=graph[j];
 		}
-		return down;
-	}
-
-	private void removeEdgeInner(String v1, String v2){
-		int v4 = indexRetriever(v1,graph);
-		Node auxNode = graph[v4].neighbourNode;
-		Node prev = null;
-
-		while(auxNode!= null){
-			if(v2.equals(auxNode.getVertexName())){
-				graph[v4].outDegree--;
-				graph[indexRetriever(v2, graph)].inDegree--;
-				edges[0]--;
-
-				if(prev==null){//first element on the list
-					graph[v4].neighbourNode = auxNode.getNode();
-					return;
-				}
-				else{
-					prev.setNode(auxNode.getNode());
-					return;
-				}
-			}
-			prev = auxNode;
-			auxNode = auxNode.getNode();
-		}
+		graph = down;
 	}
 
 	public void removeEdge(String edge){
+		try{
+			removeEdgeAux(edge);
+		}catch(InvalidEdgeException ie){System.out.println(ie);};
+	}
 
-		String[] edgePair = edge.split(",");
+	private void removeEdgeAux(String edge) throws InvalidEdgeException{
 
-		if(edgePair.length!=2){
-			System.out.println("Invalid edge!");
-			return;
-		}
+		String[] vertexPair = edge.split(",");
 
-		String v1 = edgePair[0], v2 = edgePair[1];
+		if(vertexPair.length!=2)
+			throw new InvalidEdgeException("Input not paired properly.");
 
-		int v1I = indexRetriever(v1, graph);
-		int v2I = indexRetriever(v2, graph);
+		String v1 = vertexPair[0], v2 = vertexPair[1];
 
-		if(v1I==-1 || v2I==-1){
-			System.out.println("Invalid input");
-			return;
-		}
+		int v1I = indexRetriever(v1);
+		int v2I = indexRetriever(v2);
+
+		if(v1I==-1 || v2I==-1)
+			throw new InvalidEdgeException("One or more of the vertex does not exists.");
+			
 		removeEdgeInner(v1,v2);
  	}
 
-	public void printNeighbours(String vertex){
-		int vertexIndex = indexRetriever(vertex, graph);
+ 	private void removeEdgeInner(String v1, String v2){
+		int vertexIndex = indexRetriever(v1);
+		VNode auxVNode = graph[vertexIndex].getNeighbour();
+		VNode prev = null;
 
-		if(vertexIndex==-1){
-			System.out.println("Invalid input");
-			return;
+		while(auxVNode!= null){
+			if(v2.equals(auxVNode.getVertexName())){
+				graph[vertexIndex].outDegree--;
+				graph[indexRetriever(v2)].inDegree--;
+				edges--;
+
+				if(prev==null){//first element on the list
+					graph[vertexIndex].setNeighbour(auxVNode.getVNode());
+					return;
+				}
+				else{
+					prev.setVNode(auxVNode.getVNode());
+					return;
+				}
+			}
+			prev = auxVNode;
+			auxVNode = auxVNode.getVNode();
 		}
+	}
+
+	public void printNeighbours(String vertex){
+		try{
+			printNeighboursAux(vertex);
+		}catch(InvalidVertexException iv){System.out.println(iv);};
+	}
+
+	private void printNeighboursAux(String vertex) throws InvalidVertexException{
+		int vertexIndex = indexRetriever(vertex);
+
+		if(vertexIndex==-1)
+			throw new InvalidVertexException("Vertex does not exists.");
 
 		System.out.print("Vertex "+vertex+" has neighbours ");
-		Node auxNode = graph[vertexIndex].neighbourNode;
+		VNode auxVNode = graph[vertexIndex].getNeighbour();
 
-		while(auxNode!=null){
-			System.out.print(auxNode.getVertexName()+" ");
-			auxNode = auxNode.getNode();
+		while(auxVNode!=null){
+			System.out.print(auxVNode.getVertexName()+" ");
+			auxVNode = auxVNode.getVNode();
 		}
 		System.out.println("");
 	}
- 
+
 	public int isAdjacent(String edge){
+		int ret=-1;
+		try{
+			ret = isAdjacentAux(edge);
+		}catch(InvalidEdgeException ie){System.out.println(ie);};
+		
+		return ret;
+	}
+ 
+	private int isAdjacentAux(String edge) throws InvalidEdgeException{
 
-		String[] edgePair = edge.split(",");
+		String[] vertexPair = edge.split(",");
 
-		if(edgePair.length!=2){
-			System.out.println("Invalid edge!");
-			return -1;
-		}
+		if(vertexPair.length!=2)
+			throw new InvalidEdgeException("Input not paired properly.");
 
-		String v1 = edgePair[0], v2 = edgePair[1];
+		String v1 = vertexPair[0], v2 = vertexPair[1];
 
-		int v1I = indexRetriever(v1, graph);
-		int v2I = indexRetriever(v2, graph);
+		int v1I = indexRetriever(v1);
+		int v2I = indexRetriever(v2);
 
-		if(v1I==-1 || v2I==-1){
-			System.out.println("Invalid input");
-			return -1;
-		}
+		if(v1I==-1 || v2I==-1)
+			throw new InvalidEdgeException("One or more of the vertex does not exists.");
 
-		Node auxNode = graph[v1I].neighbourNode;
+		VNode auxVNode = graph[v1I].getNeighbour();
 
-		while(auxNode!=null){
-			int v3I = indexRetriever(auxNode.getVertexName(), graph);
+		while(auxVNode!=null){
+			int v3I = indexRetriever(auxVNode.getVertexName());
 			if(v3I==v2I){
 				return 1;
 			}
-			auxNode = auxNode.getNode();
+			auxVNode = auxVNode.getVNode();
 		}
 		return 0;
 	}
-	
+
 	public boolean isConnected(String edge){
-		String[] edgePair = edge.split(",");
+		try{
+			return isConnectedAux(edge);
+		}catch(InvalidEdgeException ie){System.out.println(ie);};
+		return false;
+	}
+	
+	private boolean isConnectedAux(String edge) throws InvalidEdgeException{
+		String[] vertexPair = edge.split(",");
 
-		if(edgePair.length!=2){
-			System.out.println("Invalid edge!");
+		if(vertexPair.length!=2)
+			throw new InvalidEdgeException("Input not paired properly.");
+
+		int v1I = indexRetriever(vertexPair[0]);
+		int v2I = indexRetriever(vertexPair[1]);
+
+		if(v1I==-1 || v2I==-1)
 			return false;
-		}
 
-		int v1 = indexRetriever(edgePair[0], graph);
-		int v2 = indexRetriever(edgePair[1], graph);
-
-		if(v1==-1 || v2==-1)
-			return false;
-
-		return isConnected(v1,v2);
+		return isConnected(v1I,v2I);
 	}
 
-	public String nameRetriever(int index, Vertex[] vert){
-		return vert[index].getVertexName();
+	public String nameRetriever(int index){
+		return graph[index].getVertexName();
 	}
 
-	public int indexRetriever(String name, Vertex[] vert){
-		for(int i=0; i<vert.length; i++){
-			if(name.equals(vert[i].getVertexName()))
+	public int indexRetriever(String name){
+		for(int i=0; i<vertices; i++){
+			if(name.equals(graph[i].getVertexName()))
 				return i;
 		}
 		return -1;
 	}
 
-	private boolean isConnected(int v1, int v2){
-		boolean[] isVisited = new boolean[vertices[0]];
+	private boolean isConnected(int v1I, int v2I){
+		boolean[] isVisited = new boolean[vertices];
 		Stack<Integer> stack = new Stack<>();
-		stack.push(v1);
+		stack.push(v1I);
 
 		while(!stack.isEmpty()){
-			Node neighbours = graph[stack.peek()].neighbourNode;
+			VNode neighbours = graph[stack.peek()].getNeighbour();
 			isVisited[stack.pop()]=true;
 
 			while(neighbours!=null){
-				int testIndex = indexRetriever(neighbours.getVertexName(), graph);
+				int testIndex = indexRetriever(neighbours.getVertexName());
 
-				if(testIndex==v2)
+				if(testIndex==v2I)
 					return true;
 				if(!isVisited[testIndex])
 					stack.push(testIndex);
-				neighbours = neighbours.getNode();
+				neighbours = neighbours.getVNode();
 			}
 		}
 		return false;
 	}
 
-	// //edit
-	// public Topological_Sort[] topologicalSort(DGraph g){
-	// 	Topological_Sort[] collection = new Topological_Sort[1];
-	// 	return collection;
-	// }
-
-	public void tSort(DGraph g){ //need collection
-		TopologicalSort ts = new TopologicalSort(g);
-		for(int i=0; i<vertices[0];i++)
-				graph[i].copyUpdate();
-		try{
-			System.out.println(Arrays.toString(ts.sort()));
-		}catch(InputNotDAGException d){System.out.println(d);};
-	}
-
-	public void dfsTraversal(String startVertex){ //non func on  scyles
-		if(indexRetriever(startVertex, graph)==-1){
-			System.out.println("Invalid Vertex!");
-			return;
-		}
+	public void dfsTraversal(String startVertex) throws InvalidVertexException{ //non func on  scyles
+		if(indexRetriever(startVertex)==-1)
+			throw new InvalidVertexException(startVertex+" does not exists.");
 
 		Stack<Integer> stack = new Stack<>();
-		boolean[] isVisited = new boolean[vertices[0]];
+		boolean[] isVisited = new boolean[vertices];
 
-		stack.push(indexRetriever(startVertex, graph));
-		isVisited[indexRetriever(startVertex, graph)] = true;
+		stack.push(indexRetriever(startVertex));
+		isVisited[indexRetriever(startVertex)] = true;
 
 		while(!stack.isEmpty()){
-			int curIn = stack.pop();
-			Node neighbours = graph[curIn].neighbourNode;
-			System.out.print(nameRetriever(curIn, graph)+" ");
+			int currentVertex = stack.pop();
+			VNode neighbours = graph[currentVertex].getNeighbour();
+			System.out.print(nameRetriever(currentVertex)+" ");
 
 			while(neighbours!=null){
-				int testIndex = indexRetriever(neighbours.getVertexName(), graph);
+				int testIndex = indexRetriever(neighbours.getVertexName());
 
 				if(!isVisited[testIndex]){
 					stack.push(testIndex);
 					isVisited[testIndex] = true;
 				}
-				neighbours = neighbours.getNode();
+				neighbours = neighbours.getVNode();
 			}
 		}
 	}
 
-	public void bfsTraversal(String startVertex){
-		if(indexRetriever(startVertex, graph)==-1){
-			System.out.println("Invalid vertex!");
-			return;
-		}
+	public void bfsTraversal(String startVertex) throws InvalidVertexException{
+		if(indexRetriever(startVertex)==-1)
+			throw new InvalidVertexException(startVertex+" does not exists.");
 
 		Queue<Integer> queue = new Queue<>();
-		boolean[] isVisited = new boolean[vertices[0]];
+		boolean[] isVisited = new boolean[vertices];
 
-		queue.enqueue(indexRetriever(startVertex, graph));
-		isVisited[indexRetriever(startVertex, graph)] = true;
+		queue.enqueue(indexRetriever(startVertex));
+		isVisited[indexRetriever(startVertex)] = true;
 
 		while(!queue.isEmpty()){
-			int curIn = queue.dequeue();
-			Node neighbours = graph[curIn].neighbourNode;
-			System.out.print(nameRetriever(curIn, graph)+" ");
+			int currentVertex = queue.dequeue();
+			VNode neighbours = graph[currentVertex].getNeighbour();
+			System.out.print(nameRetriever(currentVertex)+" ");
 
 			while(neighbours!=null){
-				int testIndex = indexRetriever(neighbours.getVertexName(), graph);
+				int testIndex = indexRetriever(neighbours.getVertexName());
 
 				if(!isVisited[testIndex]){
 					isVisited[testIndex]=true;
 					queue.enqueue(testIndex);
 				}
-				neighbours = neighbours.getNode();
+				neighbours = neighbours.getVNode();
 			}
 		}
 	}
 
-	public CPResult findCriticalPath(DGraph g) throws InputNotDAGException{
-		CPResult cp = new CPResult();
-		
-		if(isDAG(g.graph))
-			throw new InputNotDAGException("Graph not DAG!");
-
-		return cp;
+	//test for dijkstra
+	public void dijkstra(DGraph g, String v){
+		Dijkstra dk = new Dijkstra();
+		try{
+			try{
+				try{
+					dk.findPath(g, v);
+				}catch(InvalidVertexException e){System.out.println(e);};
+			}catch(NegativeEdgeException d){System.out.println(d);};
+		}catch(CannotFindGraphException c){System.out.println(c);};
 	}
 
-	private boolean isDAG(Vertex[] vert){
-		for(int i=0; i<vert.length; i++){
-			if(isDAGIF(i, vert))
-				return true;
-		}
-		return false;
+
+	public void tSort(DGraph g){
+		TopologicalSort ts = new TopologicalSort();
+		try{
+			try{
+				String[] list = ts.getAllTopologicalSort(g);
+				for(int i=0; i<list.length; i++)
+					if(list[i]!=null)
+						System.out.println(list[i]);
+			}catch(InputNotDAGException d){System.out.println(d);};
+		}catch(CannotFindGraphException c){System.out.println(c);};
+	}	
+
+	public void findCriticalPath(DGraph g){
+		CriticalPath cp = new CriticalPath();
+		try{
+			try{
+				cp.findCriticalPath(g);
+			}catch(InputNotDAGException d){System.out.println(d);};
+		}catch(CannotFindGraphException c){System.out.println(c);};
 	}
 
-	private boolean isDAGIF(int v, Vertex[] vert){
-		boolean[] isVisited = new boolean[vert.length];
-		Stack<Integer> stack = new Stack<>();
-		stack.push(v);
-
-		while(!stack.isEmpty()){
-			Node neighbours = vert[stack.peek()].neighbourNode;
-			isVisited[stack.pop()]=true;
-
-			while(neighbours!=null){
-				int testIndex = indexRetriever(neighbours.getVertexName(), graph);
-
-				if(testIndex==v)
-					return true;
-
-				if(!isVisited[testIndex])
-					stack.push(testIndex);
-
-				neighbours = neighbours.getNode();
-			}
-		}
-		return false;
+	public void findLeastCriticalPath(DGraph g){
+		CriticalPath cp = new CriticalPath();
+		try{
+			try{
+				cp.leastCriticalPath(g);
+			}catch(InputNotDAGException d){System.out.println(d);};
+		}catch(CannotFindGraphException c){System.out.println(c);};
 	}
 
 	public int numberOfVertices(){
-		return vertices[0];
+		return vertices;
 	}
 
 	public int numberOfEdges(){
-		return edges[0];
+		return edges;
 	}
  
 	public DGraph getGraph(){
 		return this;
 	}
 
-    protected class CPResult{
-    	Node next = null;
-    	String vertexName = null;
-    	double criticalTime = 0.0;
-
-    	public CPResult(){}
-
-    	public void setNext(Node next){
-    		this.next = next;
-    	}
-
-    	public void setVertexName(String vertexName){
-    		this.vertexName = vertexName;
-    	}
-
-    	public void setCritTime(double time){
-    		criticalTime = time;
-    	}
-
-    	public Node getNext(){
-    		return next;
-    	}
-
-    	public String getVertexName(){
-    		return vertexName;
-    	}
-
-    	public double getCritTime(){
-    		return criticalTime;
-    	}
-    }
-
-	protected class Vertex{
-		Node neighbourNode = null;
-		String name=null;
-		int outDegree=0, inDegree=0;
-		int outDegreeC=0, inDegreeC=0;
-		double executionTime=0.0;
-
-		public Vertex(){}
-
-		public Vertex(String name){
-			this.name = name;
-		}
-
-		public boolean addNeighbour(String neighbourName, int weight){ //edit adding neighbours to the end
-			//check if neighbor is valid and already exists
-			if(neighbourNode==null){
-				neighbourNode = new Node(neighbourName, null, weight);
-				return false;
-			}
-
-			Node auxNode = neighbourNode;
-
-			while(auxNode!=null){
-				if(auxNode.getVertexName()==neighbourName)
-					return true;
-	
-				auxNode = auxNode.getNode();
-			}
-			
-			Node newNode = new Node(neighbourName, null, weight);
-			arrangeNeighbours(newNode);
-	
-			return false;
-		}
-
-		public void setVertexName(String name){
-			this.name = name;
-		}
-
-		public void setNeighbour(Node neighbourNode){
-			this.neighbourNode = neighbourNode;
-		}
-
-		public void setExecTime(double d){
-			executionTime = d;
-		}
-
-		public String getVertexName(){
-			return name;
-		}
-
-		public int getIn(){
-			return inDegree;
-		}
-
-		public int getOut(){
-			return outDegree;
-		}
-
-		public double getExecTime(){
-			return executionTime;
-		}
-
-		public Node getNeighbour(){
-			return neighbourNode;
-		}
-
-		private void arrangeNeighbours(Node newNode){//remake fast sort algo
-			Node auxNode = neighbourNode;
-			Node prev = null;
-
-			if(newNode.getWeight()==0){
-				newNode.setNode(neighbourNode);
-				neighbourNode = newNode;
-				return;
-			}
-
-			while(auxNode!=null){
-				if(newNode.getWeight()<auxNode.getWeight()){
-					if(prev==null){
-						newNode.setNode(neighbourNode);
-						neighbourNode = newNode;
-						return;
-					}
-					newNode.setNode(auxNode);
-					prev.setNode(newNode);
-					return;
-				}
-				prev = auxNode;
-				auxNode = auxNode.getNode();
-			}
-			prev.setNode(newNode); //capture
-		}
-
-		protected void copyUpdate(){
-			inDegreeC = inDegree;
-			outDegreeC = outDegree;
-		}
-	}
-
-	protected class Node{
-		Node next;
-		String vertexName;
-		int weight=0;
-
-		public Node(String vertexName, Node next, int weight){
-			this.vertexName = vertexName;
-			this.next = next;
-			this.weight = weight;
-		}	
-
-		public Node(String vertexName, Node next){
-			this.vertexName = vertexName;
-			this.next = next;
-		}
-
-		public void setNode(Node neighbour){
-			next = neighbour;
-		}
-
-		public Node getNode(){
-			return next;
-		}
-
-		public void setVertexName(String vertexName){
-			this.vertexName = vertexName;
-		}
-
-		public String getVertexName(){
-			return vertexName;
-		}
-
-		public void setWeight(int weight){
-			this.weight = weight;
-		}
-
-		public int getWeight(){
-			return weight;
-		}
-	}
-
-	protected class CNode{
-		double criticalTime = 0.0; 
-		Vertex previousTask;
-
-		public CNode(){}
-
-		public void getPreviousTask(Vertex vertex){
-			previousTask = vertex;
-		}
-
-		public void setCritTime(double time){
-			criticalTime = time;
-		}
-
-		public Vertex getPreviousTask(){
-			return previousTask;
-		}
-
-		public double getCritTime(){
-			return criticalTime;
-		}
-	}
-
-	protected class TopologicalSort{ //fixed needed getting the TopoVertex of a graph 
-
-		private int[] verticesI, edgesI; 
-		private Vertex[] topoV;
-
-		public TopologicalSort(DGraph g){
-			verticesI = g.vertices.clone();
-			edgesI = g.edges.clone();
-			topoV = g.graph.clone();
-		}
-
-		public String[] sort() throws InputNotDAGException{
-			String[] list = new String[verticesI[0]];
-
-			if(isDAG(topoV))
-				throw new InputNotDAGException("Graph not DAG!");
-			tsort(list, 0);
-
-			return list;
-		}
-
-		private void tsort(String[] list, int ctr){
-			for(int i=0; i<topoV.length; i++){
-				if(topoV[i]!=null && topoV[i].inDegreeC==0){
-					String name = nameRetriever(i, topoV);
-					list[ctr++] = name;
-					topoV = removeVertexING(name, topoV, verticesI, edgesI, true);//add functionality of passing Vertex
-					tsort(list, ctr);
-				}
-			}
-		}
+	public Vertex[] getVertexSet(){ //use clone soon
+		return graph;
 	}
 }

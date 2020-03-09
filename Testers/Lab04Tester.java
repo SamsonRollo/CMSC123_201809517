@@ -72,17 +72,15 @@ public class Lab04Tester{
 						v1 = scanText.nextLine();
 						graph.removeEdge(v1);
 						break;
-				// case 10:System.out.print("Enter valid starting vertex: "); 
-				// 		v1 = scanText.nextLine();
-				// 		graph.dfsTraversal(v1);
-				// 		break;
-				// case 11:System.out.print("Enter valid starting vertex: "); 
-				// 		v1 = scanText.nextLine(); 
-				// 		graph.bfsTraversal(v1);
-				// 		break;
-				case 12:System.out.print("Enter Inital vertex: "); //follows the sequencing of the input vertices
+				case 10:System.out.print("Enter valid starting vertex: "); 
 						v1 = scanText.nextLine();
-						System.out.println(graph.isDaG(graph));
+						graph.dfsTraversal(v1);
+						break;
+				case 11:System.out.print("Enter valid starting vertex: "); 
+						v1 = scanText.nextLine(); 
+						graph.bfsTraversal(v1);
+						break;
+				case 12:graph.tSort(graph);
 						break;
 
 				default: break;
