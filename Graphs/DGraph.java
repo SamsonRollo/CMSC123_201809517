@@ -402,22 +402,26 @@ public class DGraph implements Graph{
 		}catch(CannotFindGraphException c){System.out.println(c);};
 	}	
 
-	public void findCriticalPath(DGraph g){
+	public CPResult findCriticalPath(DGraph g){
 		CriticalPath cp = new CriticalPath();
 		try{
 			try{
-				cp.findCriticalPath(g);
+				return cp.findCriticalPath(g);
 			}catch(InputNotDAGException d){System.out.println(d);};
 		}catch(CannotFindGraphException c){System.out.println(c);};
+		
+		return new CPResult();
 	}
 
-	public void findLeastCriticalPath(DGraph g){
+	public CPResult findLeastCriticalPath(DGraph g){
 		CriticalPath cp = new CriticalPath();
 		try{
 			try{
-				cp.leastCriticalPath(g);
+				return cp.leastCriticalPath(g);
 			}catch(InputNotDAGException d){System.out.println(d);};
 		}catch(CannotFindGraphException c){System.out.println(c);};
+
+		return new CPResult();
 	}
 
 	public int numberOfVertices(){

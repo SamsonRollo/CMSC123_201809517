@@ -1,6 +1,7 @@
 package Testers;
 
 import Graphs.*;
+import Exceptions.*;
 import java.util.Scanner;
 import java.util.Arrays;
 
@@ -74,11 +75,15 @@ public class Lab04Tester{
 						break;
 				case 10:System.out.print("Enter valid starting vertex: "); 
 						v1 = scanText.nextLine();
-						graph.dfsTraversal(v1);
+						try{
+							graph.dfsTraversal(v1);
+						}catch(InvalidVertexException iv){System.out.println(iv);};
 						break;
 				case 11:System.out.print("Enter valid starting vertex: "); 
 						v1 = scanText.nextLine(); 
-						graph.bfsTraversal(v1);
+						try{
+							graph.bfsTraversal(v1);
+						}catch(InvalidVertexException iv){System.out.println(iv);};
 						break;
 				case 12:graph.tSort(graph);
 						break;
