@@ -1,0 +1,33 @@
+Divide-and-Conquer
+
+    Divide-and-Conquer solves the problem by dividing
+the problem into smaller subproblems and solved this 
+smaller identical subproblems then combine the arrived
+solutions to get the solution for the original problem.
+
+Some algorithm includes:
+    -Merge sort
+    -Binary traversals
+    -Strassen's algorithm for matrix multiplication
+
+Example of decrease-and-conquer implemented here is:
+    MERGE SORT
+
+    Merge sort works by dividing the array to smaller
+arrays and then once it is small enough, it will sort
+the array while merging it. The time complexity for
+this algorithm is O(n log n). Below is the algorithm:
+
+Algorithm:
+    1.While the array is not small enough, divide the
+     array in the middle and repeat.
+    2.With the smallest subarray, sort it, and merge
+     with its other half, while merging sort it. 
+
+For the Implementation of this algorithm, we require
+the user to:
+        1. Use number inputs only.
+        2. Use atmost two digits per element.
+        3. Separate elements by comma (,).
+        4. Example of input is "12,1,34,99,7,0" 
+           (w/o quotes)

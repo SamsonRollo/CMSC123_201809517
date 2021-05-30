@@ -1,0 +1,41 @@
+Decrease-and-Conquer
+
+    Decrease-and-Conquer solves the problem by having
+its problem decreased until it can be efficiently solved
+and use the relationship of the smaller problem to get
+the solution of the original problem. 
+
+Variations:
+    -Decrease-by-a-constant
+    -Decrease-by-a-constant-factor
+    -Variable-size-decrease
+
+Some algorithm includes:
+    -Insertion sort
+    -Binary search
+    -Euclid's algorithm
+
+Example of decrease-and-conquer implemented here is:
+    INSERTION SORT
+
+    Insertion sort works similar to bubble sort but 
+with a does not not stop comparing the current key
+until it reach the end of the array. As the name
+suggests, it insert the element to where it fits
+in the array. The time complexity of this algorithm
+is O(n2). Below is the algorithm:
+
+Algorithm:
+    1.At the current key, compare it to its predece-
+      ssor, it is smaller, swap the two until you
+      reach the end of the array or its predecessor
+      is larger than the key.
+    2.Repeat for all elements. 
+
+For the Implementation of this algorithm, we require
+the user to:
+        1. Use number inputs only.
+        2. Use atmost two digits per element.
+        3. Separate elements by comma (,).
+        4. Example of input is "12,1,34,99,7,0" 
+           (w/o quotes)

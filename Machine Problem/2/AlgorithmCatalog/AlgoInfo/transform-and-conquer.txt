@@ -1,0 +1,40 @@
+Transform-and-Conquer
+
+    Transform-and-Conquer solves the problem by doing
+a transformation of the problem into an easier type 
+of that problem. Basically, something that has an easy
+way of obtaining the solution.
+
+Principal varieties:
+    -Instance simplification
+    -Representation change
+    -Problem reduction
+
+Some algorithm includes:
+    -Heapsort
+    -AVL and 2-3 trees
+    -Gaussian elimination
+
+Example of decrease-and-conquer implemented here is:
+    HEAPSORT
+
+    Heapsort begins by creating a heap for the input.
+Since we can get the largest element in O(1), it is,
+by far the fastest among them in terms of finding the
+largest element. But deleting the largest element from
+heap requires some time. Heapsort has a total time 
+complexity of O(n log n). The algorithm for heapsort
+can be seen below:
+
+General Algorithm:
+    1. Construct a heap for the input.
+    2. Retrieve the largest element in the heap and
+       delete it, heapify, and repeat for n-1 times.
+
+For the Implementation of this algorithm, we require
+the user to:
+        1. Use number inputs only.
+        2. Use atmost two digits per element.
+        3. Separate elements by comma (,).
+        4. Example of input is "12,1,34,99,7,0" 
+           (w/o quotes)

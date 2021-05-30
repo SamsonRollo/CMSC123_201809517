@@ -1,0 +1,25 @@
+Backtracking Technique
+
+    Backtracking technique solves the problem by finding
+the first optimal solution in the problem, if it did not
+find an optimal solution and the solution space is not 
+empty, it backs one step and choose other solution.
+
+Some problem it solves includes:
+    -n-Queens Problem
+    -Sudoko
+
+Example of decrease-and-conquer implemented here is:
+    Naive Sudoku solver
+
+    Backtracking technique for solving sudoku is the
+easiest yet the slowest way of solving sodoku. The
+way it works is somewhat similar to depth-first 
+traversal, where when it meets a dead-end, it back-
+tracks and continue to search in another path. This
+is basically brute force where it tries all the 
+solutions.
+
+For the Implementation of this algorithm, we require
+the user to:
+        1. Do nothing. Just watch.

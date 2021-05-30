@@ -1,0 +1,47 @@
+Greedy Technique
+
+    Greedy technique solves the problem by selecting
+the optimum solution in each step. On each step, the
+solution must be feasible, locally optimal, and irr-
+evocable. This is primarily used in optimization pr-
+oblem.
+
+Some algorithm includes:
+    -Prim's algorithm
+    -Kruskal's algorithm
+    -Dijkstra's algorithm
+
+Example of decrease-and-conquer implemented here is:
+    DIJKSTRA'S ALGORITHM
+
+    Dijktra's algorithm is used to find the shortest
+path from a source vertex to any other vertices, this
+is called the single-souce shortest path. It works 
+greedily by selecting the optimal solution at the 
+current iteration. It is somewhat similar to brute 
+force but these kind of algorithms are used in optimi-
+zation problems. The time complexity of dijkstra is 
+O(V2) but can be reduced depending on how it is imple-
+mented. Below is the algorithm:
+
+Algorithm:
+    1.Initialize the priority queue Q with the source
+      vertex S in it. 
+    2.Initialize the distance D to each vertex to be 
+      as large as possible and its previous vertex P
+      to null.
+    3.Dequeue vertex V from the queue Q and scan its
+      neighbours.
+      a. Enqueue the neighbours to Q. And:
+      b. If the neighbour's P is null, set P as V and
+         set its D as their distance plus P's D.
+      c. If the neigbours's P is not null, compare
+         its current its current D with the calculated
+         new D, if the new is smaller, replace its
+         D with the new D, and its P as S. Otherwise,\
+         continue.         
+      d. Continue until Q is empty.
+
+For the Implementation of this algorithm, we require
+the user to:
+        1. Input the source vertex.
