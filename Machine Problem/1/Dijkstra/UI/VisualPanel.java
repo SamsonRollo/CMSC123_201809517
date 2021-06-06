@@ -100,7 +100,6 @@ public class VisualPanel extends JPanel{
 
 		jspVar.getViewport().addChangeListener(new ChangeListener(){
 			public void stateChanged(ChangeEvent e){
-				//varPanel.repaint(); //try removing this 
 				repaint();
 			}
 		});

@@ -181,7 +181,6 @@ public class Dijkstra implements Runnable{
 			else
 				track = nameRetriever(i);
 			backtrack(prev, tSource, prev[i]);
-			//System.out.println(nameRetriever(i)+"\t\t"+vertices[i]+"\t\t"+track);
 			tracks[i] = track; 
 		}
 		

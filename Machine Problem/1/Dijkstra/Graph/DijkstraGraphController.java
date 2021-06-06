@@ -29,6 +29,7 @@ public class DijkstraGraphController{
 
 	public void loadGraph(java.io.File path){
 		try{
+			main.transform("Transform to digraph", false);
 			model.readGraph(path);		
 			main.refreshDraw();		
 			main.refreshVisual();
@@ -40,9 +41,8 @@ public class DijkstraGraphController{
 	public void generateGraph(String vSize, String eSize){
 		try{
 			model = new DijkstraGraphModel();
+			main.transform("Transform to digraph", false);
 			model.generateRandom(vSize, eSize);
-			main.resetSetting("Transform to digraph");
-			model.setDirected(false);
 			main.refreshDraw();
 			main.refreshVisual();
 		}catch(InvalidGenerationException ige){

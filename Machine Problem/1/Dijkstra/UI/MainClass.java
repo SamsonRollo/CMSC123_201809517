@@ -114,10 +114,10 @@ public class MainClass extends JFrame implements ActionListener, MenuListener{
 			System.exit(0);
 		}else if(action.equals("Generate random graph")){
 			JPanel generation = new JPanel(new GridLayout(2,2));
-			JTextField vSize = new JTextField("max 50");
+			JTextField vSize = new JTextField();
 			JTextField eSize = new JTextField();
 
-			generation.add(new JLabel("Vertex count: "));
+			generation.add(new JLabel("Vertex count (Max 50): "));
 			generation.add(vSize);
 			generation.add(new JLabel("Edge count: "));
 			generation.add(eSize);

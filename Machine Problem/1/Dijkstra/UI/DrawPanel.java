@@ -99,8 +99,7 @@ public class DrawPanel extends JPanel{
 						if(eV!=null){
 							String weight = "";
 
-							weight = JOptionPane.showInputDialog("Enter weight or leave blank to automatically compute weight"); //put default input = 1.0
-							if(weight!=null)
+							weight = JOptionPane.showInputDialog(null,"Enter weight or leave blank to automatically compute weight","1"); 							if(weight!=null)
 								addEdge(selectedElement, eV, weight);
 						}
 						selectedElement = null; //after adding edge, either success or fail, it ill reset initial vertex
@@ -298,7 +297,7 @@ public class DrawPanel extends JPanel{
 		return controller.checkVertexOverlap(x,y);
 	}
 
-	private String overEdge(int x, int y){ //use square later for wide range
+	private String overEdge(int x, int y){ 
 		for(Edge e : controller.getEdges()){
 			if(e.getv2().equals(e.getv1())){ //self loop edge
 				if(e.getRectangle().contains(x,y))
