@@ -1,13 +1,14 @@
 Initialize all distance as infinite
 
 Create an empty priority queue Q
-Insert source vertex S and its distamce equals zero
+Insert source vertex S and its distance equals zero
 
 While Q is not empty
     Retrieve vertex u, the minimum distance vertex from Q
- 
+
     Visit every adjacent vertex v of u
-        If distance of v is less than the total distance of u plus distance between u and v
-            
-            Update distance of v equal total distance ofu plus distance beteen u and v
+        newDistance = distance of u plus distance between u and v
+        
+        If newDistance is less than distance of v 
+            Update distance of v equal newDistance
             Add vertex v to Q

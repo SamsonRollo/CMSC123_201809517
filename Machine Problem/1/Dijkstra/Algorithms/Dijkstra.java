@@ -104,12 +104,13 @@ public class Dijkstra implements Runnable{
 			int indexCur = indexRetriever(cur);
 			VNode neighbours = vertexSet.get(indexCur).getNeighbour();
 			controller.getVertices().get(indexCur).setActivity("active");
-			bothSleep("Retrieve vertex;");
+			bothSleep("Retrieve vertex");
 
 			while(neighbours!=null){
 				algoSleep("Visit every");
-				double tempDist = distance[indexCur]+neighbours.getWeight();
 				int neighcurIndex = indexRetriever(neighbours.getVertexName());
+				
+				double tempDist = distance[indexCur]+neighbours.getWeight();
 				int i = controller.edgeIndex(cur+","+neighbours.getVertexName());
 
 				if(!controller.isDirected() || (controller.isDirected() && i!=-1)){
@@ -117,19 +118,20 @@ public class Dijkstra implements Runnable{
 						i = controller.edgeIndex(neighbours.getVertexName()+","+cur);
 					if(i!=-1)
 						controller.getEdges().get(i).setActivity("active");
-					bothSleep("Visit every"); //current edge evaluated
+					bothSleep("newDistance =");
 
 					if(!all && neighbours.getVertexName().equals(destination))
 						vertexSet.get(destIndex).removeInDegree();
 
+					algoSleep("If newDistance is less");
 					if(tempDist<distance[neighcurIndex]){
-						algoSleep("if distance of v");
 						distance[neighcurIndex] = tempDist;
 						prev[neighcurIndex] = cur;
 						algoSleep("Update distance");
 						queue.enqueue(neighbours.getVertexName());
 						algoSleep("Add vertex");
 					}
+					
 					if(i!=-1)
 						controller.getEdges().get(i).setActivity("done");
 					visualSleep();//vertex evaluation done
